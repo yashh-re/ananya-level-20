@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Image from "next/image";
 
 const TARGET_DATE = new Date("2026-12-17T18:00:00");
 
@@ -59,9 +60,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("visual")) {
-      const visualEntry = window.setTimeout(() => setEntered(true), 0);
-      return () => window.clearTimeout(visualEntry);
+    const visualTarget = new URLSearchParams(window.location.search).get("visual");
+    if (visualTarget !== null) {
+      let visualScroll: number | undefined;
+      const visualEntry = window.setTimeout(() => {
+        setEntered(true);
+        visualScroll = window.setTimeout(() => document.getElementById(visualTarget || "top")?.scrollIntoView(), 120);
+      }, 0);
+      return () => {
+        window.clearTimeout(visualEntry);
+        if (visualScroll) window.clearTimeout(visualScroll);
+      };
     }
   }, []);
 
@@ -194,7 +203,10 @@ export default function Home() {
             </div>
             <div className="intel-card">
               <div className="intel-top"><span>THREAT ASSESSMENT</span><b>OMEGA</b></div>
-              <div className="helmet-mark" aria-hidden="true"><span className="eye left" /><span className="eye right" /></div>
+              <figure className="doom-poster">
+                <Image src="/avengers-doomsday-poster.jpg" alt="Doctor Doom in the Avengers: Doomsday poster" width={1280} height={1897} priority={false} />
+                <figcaption><span>VISUAL INTEL // DOCTOR DOOM</span><a href="https://www.artofvfx.com/avengers-doomsday/" target="_blank" rel="noreferrer">SOURCE: THE ART OF VFX ↗</a></figcaption>
+              </figure>
               <div className="scan-labels"><span>IDENTITY<br /><b>UNKNOWN</b></span><span>THREAT LEVEL<br /><b>DOOMSDAY</b></span></div>
               <div className="intel-footer">AVENGERS // DOOMSDAY<br /><b>THE FUTURE IS MASKED</b></div>
             </div>
