@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 const TARGET_DATE = new Date("2026-12-17T18:00:00");
 
@@ -30,19 +30,26 @@ function Shield({ small = false }: { small?: boolean }) {
 
 export default function Home() {
   const [entered, setEntered] = useState(false);
+  const [identityConfirmed, setIdentityConfirmed] = useState(false);
+  const [dogName, setDogName] = useState("");
+  const [identityError, setIdentityError] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    setCountdown(getCountdown());
+    const initialUpdate = window.setTimeout(() => setCountdown(getCountdown()), 0);
     const timer = window.setInterval(() => setCountdown(getCountdown()), 1000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initialUpdate);
+      window.clearInterval(timer);
+    };
   }, []);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("visual")) {
-      setEntered(true);
+      const visualEntry = window.setTimeout(() => setEntered(true), 0);
+      return () => window.clearTimeout(visualEntry);
     }
   }, []);
 
@@ -69,6 +76,18 @@ export default function Home() {
     setSoundOn(true);
   }
 
+  function confirmIdentity(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (dogName.trim().toLowerCase() === "percy") {
+      setIdentityConfirmed(true);
+      setIdentityError("");
+      return;
+    }
+
+    setIdentityError("ACCESS DENIED · THAT DOESN'T MATCH OUR RECORDS");
+  }
+
   return (
     <main className={entered ? "site is-entered" : "site"}>
       {!entered && (
@@ -76,15 +95,47 @@ export default function Home() {
           <div className="gate-grid" aria-hidden="true" />
           <div className="gate-scan" aria-hidden="true" />
           <div className="gate-content">
-            <div className="status-line"><i /> INCOMING SECURE TRANSMISSION</div>
-            <Shield />
-            <p className="kicker">Strategic Homeland Intervention</p>
-            <h1>IDENTITY<br />CONFIRMED</h1>
-            <div className="identity-readout">
-              <span>SUBJECT</span><strong>ANANYA</strong><span>CLEARANCE</span><strong>LEVEL 20</strong>
-            </div>
-            <button className="access-button" onClick={enterDossier}><span>ACCESS BIRTHDAY DOSSIER</span><b aria-hidden="true">→</b></button>
-            <p className="microcopy">BIOMETRIC MATCH · ENCRYPTION ACTIVE · EYES ONLY</p>
+            {!identityConfirmed ? (
+              <>
+                <div className="status-line"><i /> IDENTITY CHECK REQUIRED</div>
+                <Shield />
+                <p className="kicker">S.H.I.E.L.D. SECURITY QUESTION</p>
+                <h1>CONFIRM<br />IDENTITY</h1>
+                <form className="identity-challenge" onSubmit={confirmIdentity}>
+                  <label htmlFor="dog-name">NAME YOUR DOG</label>
+                  <div className="challenge-control">
+                    <input
+                      id="dog-name"
+                      autoComplete="off"
+                      autoFocus
+                      value={dogName}
+                      onChange={(event) => {
+                        setDogName(event.target.value);
+                        setIdentityError("");
+                      }}
+                      placeholder="ENTER ANSWER"
+                    />
+                    <button type="submit" disabled={!dogName.trim()}>VERIFY →</button>
+                  </div>
+                  <p className={identityError ? "challenge-status is-error" : "challenge-status"} aria-live="polite">
+                    {identityError || "SECURITY PROMPT 01 // CASE INSENSITIVE"}
+                  </p>
+                </form>
+                <p className="microcopy">ENCRYPTED CONNECTION · ONE ATTEMPT AT A TIME</p>
+              </>
+            ) : (
+              <div className="confirmed-panel">
+                <div className="status-line"><i /> IDENTITY CONFIRMED</div>
+                <Shield />
+                <p className="kicker">PERCY PROTOCOL ACCEPTED</p>
+                <h1>HAPPY 20<br /><span>ANANYA</span></h1>
+                <div className="identity-readout">
+                  <span>SUBJECT</span><strong>ANANYA</strong><span>CLEARANCE</span><strong>LEVEL 20</strong>
+                </div>
+                <button className="access-button" onClick={enterDossier}><span>UNLOCK CLEARANCE 20 GIFT</span><b aria-hidden="true">→</b></button>
+                <p className="microcopy">IDENTITY VERIFIED · GIFT CLEARANCE AVAILABLE</p>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -149,14 +200,19 @@ export default function Home() {
         <section className="transport section" id="transport">
           <div className="section-number">03 / EXTRACTION PLAN</div>
           <div className="transport-grid">
-            <div><p className="kicker">NO HERO LEFT BEHIND</p><h2>TRAVEL?<br /><em>HANDLED.</em></h2><p className="lead">Your journey to the mission—and safely back home—is on me.</p></div>
+            <div><p className="kicker">NO HERO LEFT BEHIND</p><h2>THE WHOLE<br /><em>EXPERIENCE.</em></h2><p className="lead">From West Lafayette to Doomsday and safely back—your entire mission is covered.</p></div>
             <div className="route-panel">
               <div className="route">
-                <span className="route-point"><i>01</i><b>HOME BASE</b><small>PICKUP / DEPARTURE</small></span><span className="route-line"><i /></span>
+                <span className="route-point"><i>01</i><b>WEST LAFAYETTE</b><small>BUS DEPARTURE</small></span><span className="route-line"><i /></span>
                 <span className="route-point destination"><i>02</i><b>MISSION SITE</b><small>AVENGERS: DOOMSDAY</small></span><span className="route-line return"><i /></span>
-                <span className="route-point"><i>03</i><b>HOME BASE</b><small>SAFE RETURN</small></span>
+                <span className="route-point"><i>03</i><b>WEST LAFAYETTE</b><small>SAFE RETURN</small></span>
               </div>
-              <div className="covered"><span>ROUND TRIP STATUS</span><strong>100% COVERED BY ME</strong></div>
+              <div className="mission-includes" aria-label="Everything included">
+                <span><i>01</i><b>THE BUS</b><small>TO + FROM WEST LAFAYETTE</small></span>
+                <span><i>02</i><b>THE MOVIE</b><small>YOUR DOOMSDAY TICKET</small></span>
+                <span><i>03</i><b>THE FOOD</b><small>MISSION FUEL INCLUDED</small></span>
+              </div>
+              <div className="covered"><span>FULL EXPERIENCE STATUS</span><strong>100% COVERED BY ME</strong></div>
             </div>
           </div>
         </section>
