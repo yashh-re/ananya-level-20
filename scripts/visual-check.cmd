@@ -13,7 +13,8 @@ if errorlevel 1 (
   exit /b 1
 )
 
-"%CHROME_EXE%" --headless=new --disable-gpu --disable-gpu-sandbox --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --no-first-run --no-default-browser-check --user-data-dir="%CD%\.chrome-profile" --screenshot="%CD%\visual-desktop.png" --window-size=1440,1100 http://localhost:3000/?visual=desktop
-"%CHROME_EXE%" --headless=new --disable-gpu --disable-gpu-sandbox --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --no-first-run --no-default-browser-check --user-data-dir="%CD%\.chrome-profile-mobile" --screenshot="%CD%\visual-mobile.png" --window-size=390,1200 http://localhost:3000/?visual=mobile
+"%CHROME_EXE%" --headless=new --virtual-time-budget=1500 --disable-gpu --disable-gpu-sandbox --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --no-first-run --no-default-browser-check --user-data-dir="%CD%\.chrome-profile" --screenshot="%CD%\visual-desktop.png" --window-size=1440,1100 http://localhost:3000/?visual=desktop
+"%CHROME_EXE%" --headless=new --virtual-time-budget=1500 --disable-gpu --disable-gpu-sandbox --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --no-first-run --no-default-browser-check --user-data-dir="%CD%\.chrome-profile-mobile" --screenshot="%CD%\visual-mobile.png" --window-size=390,1200 http://localhost:3000/?visual=mobile
+"%CHROME_EXE%" --headless=new --virtual-time-budget=1500 --disable-gpu --disable-gpu-sandbox --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --no-first-run --no-default-browser-check --user-data-dir="%CD%\.chrome-profile-ticket" --screenshot="%CD%\visual-ticket.png" --window-size=1440,1100 http://localhost:3000/?visual=ticket#ticket
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }"

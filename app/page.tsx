@@ -1,717 +1,178 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-type StyleKey =
-  | "Culture"
-  | "Food"
-  | "Nature"
-  | "Adventure"
-  | "Design"
-  | "Slow"
-  | "Nightlife"
-  | "Wellness";
+const TARGET_DATE = new Date("2026-12-17T18:00:00");
 
-type Pace = "Slow" | "Wandering" | "Expedition" | "Social";
+function pad(value: number) {
+  return String(Math.max(0, value)).padStart(2, "0");
+}
 
-type Region =
-  | "Africa"
-  | "Asia"
-  | "Europe"
-  | "North America"
-  | "Oceania"
-  | "South America";
-
-type TravelEntry = {
-  id: string;
-  place: string;
-  country: string;
-  region: Region;
-  visitedAt: string;
-  rating: number;
-  pace: Pace;
-  styles: StyleKey[];
-  highlight: string;
-  memory: string;
-};
-
-type PlaceForm = Omit<TravelEntry, "id">;
-
-const storageKey = "travellore-profile-v1";
-
-const styleOptions: StyleKey[] = [
-  "Culture",
-  "Food",
-  "Nature",
-  "Adventure",
-  "Design",
-  "Slow",
-  "Nightlife",
-  "Wellness",
-];
-
-const regions: Region[] = [
-  "Africa",
-  "Asia",
-  "Europe",
-  "North America",
-  "Oceania",
-  "South America",
-];
-
-const paces: Pace[] = ["Slow", "Wandering", "Expedition", "Social"];
-
-const starterEntries: TravelEntry[] = [
-  {
-    id: "kyoto",
-    place: "Kyoto",
-    country: "Japan",
-    region: "Asia",
-    visitedAt: "2024-04-12",
-    rating: 5,
-    pace: "Slow",
-    styles: ["Culture", "Food", "Design", "Slow"],
-    highlight: "Temple mornings",
-    memory: "Lantern streets, noodle counters, quiet gardens, and long walks between shrines.",
-  },
-  {
-    id: "reykjavik",
-    place: "Reykjavik",
-    country: "Iceland",
-    region: "Europe",
-    visitedAt: "2025-02-08",
-    rating: 4,
-    pace: "Expedition",
-    styles: ["Nature", "Adventure", "Wellness"],
-    highlight: "South Coast road trip",
-    memory: "Black sand, glacier air, thermal water, and weather that made every plan feel alive.",
-  },
-  {
-    id: "lisbon",
-    place: "Lisbon",
-    country: "Portugal",
-    region: "Europe",
-    visitedAt: "2025-09-17",
-    rating: 4,
-    pace: "Wandering",
-    styles: ["Food", "Culture", "Nightlife", "Design"],
-    highlight: "Alfama after dark",
-    memory: "Tile walls, late dinners, bright viewpoints, and narrow streets that rewarded detours.",
-  },
-];
-
-const blankForm: PlaceForm = {
-  place: "",
-  country: "",
-  region: "Asia",
-  visitedAt: "2026-06-06",
-  rating: 4,
-  pace: "Wandering",
-  styles: ["Culture"],
-  highlight: "",
-  memory: "",
-};
-
-function readStoredProfile() {
-  const fallback = {
-    travelerName: "Traveler",
-    entries: starterEntries,
+function getCountdown() {
+  const distance = Math.max(0, TARGET_DATE.getTime() - Date.now());
+  return {
+    days: Math.floor(distance / 86_400_000),
+    hours: Math.floor((distance / 3_600_000) % 24),
+    minutes: Math.floor((distance / 60_000) % 60),
+    seconds: Math.floor((distance / 1_000) % 60),
   };
-
-  if (typeof window === "undefined") {
-    return fallback;
-  }
-
-  const saved = window.localStorage.getItem(storageKey);
-
-  if (!saved) {
-    return fallback;
-  }
-
-  try {
-    const parsed = JSON.parse(saved) as {
-      travelerName?: string;
-      entries?: TravelEntry[];
-    };
-
-    return {
-      travelerName: parsed.travelerName || fallback.travelerName,
-      entries: Array.isArray(parsed.entries) ? parsed.entries : fallback.entries,
-    };
-  } catch {
-    window.localStorage.removeItem(storageKey);
-    return fallback;
-  }
 }
 
-const monthNames = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-function formatVisitDate(value: string) {
-  const [year, month] = value.split("-");
-  const monthIndex = Number(month) - 1;
-
-  if (!year || monthIndex < 0 || monthIndex > 11) {
-    return "Undated";
-  }
-
-  return `${monthNames[monthIndex]} ${year}`;
-}
-
-function getAverageRating(entries: TravelEntry[]) {
-  if (entries.length === 0) {
-    return "0.0";
-  }
-
-  const total = entries.reduce((sum, entry) => sum + entry.rating, 0);
-  return (total / entries.length).toFixed(1);
-}
-
-function getStyleCounts(entries: TravelEntry[]) {
-  const counts = styleOptions.reduce(
-    (acc, style) => ({ ...acc, [style]: 0 }),
-    {} as Record<StyleKey, number>,
+function Shield({ small = false }: { small?: boolean }) {
+  return (
+    <svg className={small ? "shield shield-small" : "shield"} viewBox="0 0 120 140" role="img" aria-label="Agent shield">
+      <path d="M60 5 108 23v45c0 31-19 55-48 67C31 123 12 99 12 68V23L60 5Z" />
+      <path className="shield-inner" d="m60 22 31 12v33c0 20-11 37-31 48-20-11-31-28-31-48V34l31-12Z" />
+      <path className="shield-star" d="m60 36 7 18 20 1-15 13 5 19-17-10-17 10 5-19-15-13 20-1 7-18Z" />
+    </svg>
   );
-
-  entries.forEach((entry) => {
-    entry.styles.forEach((style) => {
-      counts[style] += 1;
-    });
-
-    if (entry.pace === "Slow") {
-      counts.Slow += 1;
-    }
-
-    if (entry.pace === "Expedition") {
-      counts.Adventure += 1;
-    }
-
-    if (entry.pace === "Social") {
-      counts.Nightlife += 1;
-    }
-  });
-
-  return counts;
-}
-
-function getDominantStyles(counts: Record<StyleKey, number>) {
-  return styleOptions
-    .map((style) => ({ style, count: counts[style] }))
-    .sort((a, b) => b.count - a.count)
-    .filter((item) => item.count > 0)
-    .slice(0, 4);
-}
-
-function getSignatureTitle(entries: TravelEntry[], dominantStyles: StyleKey[]) {
-  if (entries.length === 0) {
-    return "Unstamped Traveler";
-  }
-
-  if (entries.length === 1) {
-    return `${entries[0].place} Origin`;
-  }
-
-  const [primary, secondary] = dominantStyles;
-
-  if (primary === "Culture" && secondary === "Food") {
-    return "Cultural Table Seeker";
-  }
-
-  if (primary === "Nature" && secondary === "Adventure") {
-    return "Open Terrain Collector";
-  }
-
-  if (primary === "Slow" && secondary === "Design") {
-    return "Slow City Archivist";
-  }
-
-  if (primary === "Nightlife" && secondary === "Food") {
-    return "After-Hours Tastemaker";
-  }
-
-  if (primary === "Wellness" && secondary === "Nature") {
-    return "Restorative Route Finder";
-  }
-
-  if (!secondary) {
-    return `${primary} Traveler`;
-  }
-
-  return `${primary} ${secondary} Traveler`;
-}
-
-function getTravelArc(entries: TravelEntry[]) {
-  if (entries.length === 0) {
-    return "Add the first place to create a signature.";
-  }
-
-  const origin = entries[0];
-  const latest = entries[entries.length - 1];
-
-  if (entries.length === 1) {
-    return `${origin.place} is the origin stamp. Every later trip will sharpen the profile.`;
-  }
-
-  return `${origin.place} set the first signal; ${latest.place} is the newest stamp in the pattern.`;
-}
-
-function sortByVisit(entries: TravelEntry[]) {
-  return [...entries].sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
 }
 
 export default function Home() {
-  const [storedProfile] = useState(readStoredProfile);
-  const [travelerName, setTravelerName] = useState(storedProfile.travelerName);
-  const [entries, setEntries] = useState<TravelEntry[]>(storedProfile.entries);
-  const [form, setForm] = useState<PlaceForm>(blankForm);
+  const [entered, setEntered] = useState(false);
+  const [accepted, setAccepted] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
+    setCountdown(getCountdown());
+    const timer = window.setInterval(() => setCountdown(getCountdown()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("visual")) {
+      setEntered(true);
     }
+  }, []);
 
-    window.localStorage.setItem(
-      storageKey,
-      JSON.stringify({ travelerName, entries }),
-    );
-  }, [entries, travelerName]);
+  useEffect(() => {
+    if (!soundOn) return;
+    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const context = new AudioContextClass();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(110, context.currentTime);
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.03, context.currentTime + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 1.4);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 1.5);
+    return () => void context.close();
+  }, [soundOn]);
 
-  const profile = useMemo(() => {
-    const counts = getStyleCounts(entries);
-    const dominant = getDominantStyles(counts);
-    const dominantStyles = dominant.map((item) => item.style);
-    const countries = new Set(entries.map((entry) => entry.country)).size;
-    const regionsSeen = new Set(entries.map((entry) => entry.region)).size;
-    const maxCount = Math.max(...Object.values(counts), 1);
-    const sortedEntries = sortByVisit(entries);
-    const latest = sortedEntries[0];
-
-    return {
-      averageRating: getAverageRating(entries),
-      countries,
-      dominant,
-      maxCount,
-      origin: entries[0],
-      regionsSeen,
-      signatureTitle: getSignatureTitle(entries, dominantStyles),
-      styleCounts: counts,
-      sortedEntries,
-      latest,
-      travelArc: getTravelArc(entries),
-    };
-  }, [entries]);
-
-  function updateForm<Key extends keyof PlaceForm>(
-    key: Key,
-    value: PlaceForm[Key],
-  ) {
-    setForm((current) => ({ ...current, [key]: value }));
-  }
-
-  function toggleStyle(style: StyleKey) {
-    setForm((current) => {
-      const styles = current.styles.includes(style)
-        ? current.styles.filter((item) => item !== style)
-        : [...current.styles, style];
-
-      return {
-        ...current,
-        styles: styles.length > 0 ? styles : [style],
-      };
-    });
-  }
-
-  function addEntry(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const nextEntry: TravelEntry = {
-      ...form,
-      id: `${form.place}-${Date.now()}`.toLowerCase().replace(/\s+/g, "-"),
-      place: form.place.trim(),
-      country: form.country.trim(),
-      highlight: form.highlight.trim(),
-      memory: form.memory.trim(),
-    };
-
-    if (!nextEntry.place || !nextEntry.country) {
-      return;
-    }
-
-    setEntries((current) => [...current, nextEntry]);
-    setForm(blankForm);
-  }
-
-  function removeEntry(id: string) {
-    setEntries((current) => current.filter((entry) => entry.id !== id));
-  }
-
-  function resetProfile() {
-    setTravelerName("Traveler");
-    setEntries(starterEntries);
+  function enterDossier() {
+    setEntered(true);
+    setSoundOn(true);
   }
 
   return (
-    <main className="app-shell">
-      <header className="topbar" aria-label="Travellore workspace">
-        <div className="brand-lockup">
-          <span className="brand-mark" aria-hidden="true">
-            T
-          </span>
-          <div>
-            <p className="eyebrow">Travellore</p>
-            <h1>Travel profile studio</h1>
+    <main className={entered ? "site is-entered" : "site"}>
+      {!entered && (
+        <section className="gate" aria-label="Classified birthday transmission">
+          <div className="gate-grid" aria-hidden="true" />
+          <div className="gate-scan" aria-hidden="true" />
+          <div className="gate-content">
+            <div className="status-line"><i /> INCOMING SECURE TRANSMISSION</div>
+            <Shield />
+            <p className="kicker">Strategic Homeland Intervention</p>
+            <h1>IDENTITY<br />CONFIRMED</h1>
+            <div className="identity-readout">
+              <span>SUBJECT</span><strong>ANANYA</strong><span>CLEARANCE</span><strong>LEVEL 20</strong>
+            </div>
+            <button className="access-button" onClick={enterDossier}><span>ACCESS BIRTHDAY DOSSIER</span><b aria-hidden="true">→</b></button>
+            <p className="microcopy">BIOMETRIC MATCH · ENCRYPTION ACTIVE · EYES ONLY</p>
           </div>
-        </div>
+        </section>
+      )}
 
-        <nav className="nav-tabs" aria-label="Primary">
-          <a href="#signature">Signature</a>
-          <a href="#journal">Journal</a>
-          <a href="#ecosystem">Ecosystem</a>
+      <div className="experience" aria-hidden={!entered}>
+        <nav className="nav-shell">
+          <a className="brand" href="#top" aria-label="SHIELD birthday command home"><Shield small /><span><b>S.H.I.E.L.D.</b><small>SPECIAL BIRTHDAY DIVISION</small></span></a>
+          <div className="nav-links"><a href="#briefing">Briefing</a><a href="#ticket">Clearance</a><a href="#transport">Transport</a></div>
+          <button className="sound-button" onClick={() => setSoundOn((value) => !value)} aria-label="Toggle interface sound"><span className={soundOn ? "sound-bars is-on" : "sound-bars"}><i /><i /><i /></span>{soundOn ? "AUDIO ON" : "AUDIO OFF"}</button>
         </nav>
-      </header>
 
-      <section className="workspace-grid" aria-label="Travel profile builder">
-        <article className="signature-panel" id="signature">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/travel-signature.png" alt="" className="signature-image" />
-          <div className="signature-shade" />
+        <section className="hero" id="top">
+          <div className="hero-orbit orbit-one" aria-hidden="true" /><div className="hero-orbit orbit-two" aria-hidden="true" />
+          <div className="hero-copy">
+            <p className="kicker red">● PRIORITY ALPHA · PERSONAL FILE</p><p className="happy">HAPPY</p>
+            <div className="twenty-wrap"><span className="twenty">20</span><span className="agent-name">AGENT<br /><b>ANANYA</b></span></div>
+            <p className="hero-intro">Twenty years of origin stories, plot twists, and saving the day. Your next mission has officially been declassified.</p>
+            <a className="primary-cta" href="#briefing">OPEN MISSION FILE <span>↓</span></a>
+          </div>
+          <div className="hero-visual" aria-hidden="true">
+            <div className="doom-core"><span>20</span><small>LEVEL</small></div><div className="radar radar-a" /><div className="radar radar-b" />
+            <span className="coordinate coord-a">41.8781° N</span><span className="coordinate coord-b">EARTH-616</span>
+          </div>
+          <div className="scroll-cue"><i /> SCROLL TO DECLASSIFY</div>
+        </section>
 
-          <div className="signature-content">
-            <div className="profile-row">
-              <label className="traveler-name">
-                <span>Traveler</span>
-                <input
-                  value={travelerName}
-                  onChange={(event) => setTravelerName(event.target.value)}
-                  aria-label="Traveler name"
-                />
-              </label>
-              <span className="stamp-count">{entries.length} stamps</span>
+        <section className="briefing section" id="briefing">
+          <div className="section-number">01 / MISSION BRIEFING</div>
+          <div className="briefing-grid">
+            <div className="briefing-copy">
+              <p className="kicker">CLASSIFIED // LEVEL 20 ACCESS</p><h2>THE WORLD IS<br /><em>ABOUT TO CHANGE.</em></h2>
+              <p className="lead">And you have front-row clearance to witness it.</p>
+              <p>An inter-dimensional event has been detected. Heroes will assemble. Worlds will collide. One agent has been selected for an advance screening of the next chapter.</p>
+              <div className="assignment"><span>ASSIGNMENT</span><strong>WATCH THE DOOMSDAY PROTOCOL UNFOLD.</strong></div>
             </div>
-
-            <div className="signature-main">
-              <p className="eyebrow">Signature profile</p>
-              <h2>{profile.signatureTitle}</h2>
-              <p>{profile.travelArc}</p>
-            </div>
-
-            <dl className="stats-strip">
-              <div>
-                <dt>Countries</dt>
-                <dd>{profile.countries}</dd>
-              </div>
-              <div>
-                <dt>Regions</dt>
-                <dd>{profile.regionsSeen}</dd>
-              </div>
-              <div>
-                <dt>Average</dt>
-                <dd>{profile.averageRating}</dd>
-              </div>
-              <div>
-                <dt>Origin</dt>
-                <dd>{profile.origin?.place ?? "None"}</dd>
-              </div>
-            </dl>
-
-            <div className="style-row" aria-label="Dominant travel styles">
-              {profile.dominant.length > 0 ? (
-                profile.dominant.map((item) => (
-                  <span key={item.style}>{item.style}</span>
-                ))
-              ) : (
-                <span>No styles yet</span>
-              )}
+            <div className="intel-card">
+              <div className="intel-top"><span>THREAT ASSESSMENT</span><b>OMEGA</b></div>
+              <div className="helmet-mark" aria-hidden="true"><span className="eye left" /><span className="eye right" /></div>
+              <div className="scan-labels"><span>IDENTITY<br /><b>UNKNOWN</b></span><span>THREAT LEVEL<br /><b>DOOMSDAY</b></span></div>
+              <div className="intel-footer">AVENGERS // DOOMSDAY<br /><b>THE FUTURE IS MASKED</b></div>
             </div>
           </div>
-        </article>
+        </section>
 
-        <aside className="entry-console" aria-label="Add a travel stamp">
-          <div className="console-header">
-            <div>
-              <p className="eyebrow">New stamp</p>
-              <h2>Add a place</h2>
+        <section className="ticket-section section" id="ticket">
+          <div className="section-number">02 / ACCESS CLEARANCE</div>
+          <div className="ticket-heading"><div><p className="kicker red">YOUR OFFICIAL INVITATION</p><h2>MISSION PASS</h2></div><p>NON-TRANSFERABLE<br />ONE VERY IMPORTANT AGENT</p></div>
+          <article className="ticket">
+            <div className="ticket-main">
+              <div className="ticket-brand"><Shield small /><span>MARVEL STUDIOS<br /><b>AVENGERS: DOOMSDAY</b></span></div>
+              <div className="ticket-title"><span>ADVANCE PREVIEW</span><strong>17<span>DEC</span></strong></div>
+              <div className="ticket-details">
+                <div><span>AGENT</span><b>ANANYA</b></div><div><span>CLEARANCE</span><b>LEVEL 20</b></div><div><span>ADMIT</span><b>ONE HERO</b></div><div><span>LOCATION</span><b>TO BE DECLASSIFIED</b></div>
+              </div>
+              <p className="ticket-note">Your seat at the end of the world is secured.</p>
             </div>
-            <button
-              className="icon-button"
-              type="button"
-              onClick={resetProfile}
-              aria-label="Reset demo profile"
-              title="Reset demo profile"
-            >
-              ↺
-            </button>
-          </div>
+            <div className="ticket-stub"><span>MISSION</span><b>DOOMSDAY</b><div className="barcode" aria-hidden="true" /><small>DEC.17 // A20</small><Shield small /></div>
+          </article>
+          <p className="fine-print">* Official booking details, showtime and venue will be transmitted to Agent Ananya upon confirmation.</p>
+        </section>
 
-          <form onSubmit={addEntry} className="stamp-form">
-            <div className="field-pair">
-              <label>
-                <span>Place</span>
-                <input
-                  required
-                  value={form.place}
-                  onChange={(event) => updateForm("place", event.target.value)}
-                  placeholder="Marrakech"
-                />
-              </label>
-
-              <label>
-                <span>Country</span>
-                <input
-                  required
-                  value={form.country}
-                  onChange={(event) =>
-                    updateForm("country", event.target.value)
-                  }
-                  placeholder="Morocco"
-                />
-              </label>
+        <section className="transport section" id="transport">
+          <div className="section-number">03 / EXTRACTION PLAN</div>
+          <div className="transport-grid">
+            <div><p className="kicker">NO HERO LEFT BEHIND</p><h2>TRAVEL?<br /><em>HANDLED.</em></h2><p className="lead">Your journey to the mission—and safely back home—is on me.</p></div>
+            <div className="route-panel">
+              <div className="route">
+                <span className="route-point"><i>01</i><b>HOME BASE</b><small>PICKUP / DEPARTURE</small></span><span className="route-line"><i /></span>
+                <span className="route-point destination"><i>02</i><b>MISSION SITE</b><small>AVENGERS: DOOMSDAY</small></span><span className="route-line return"><i /></span>
+                <span className="route-point"><i>03</i><b>HOME BASE</b><small>SAFE RETURN</small></span>
+              </div>
+              <div className="covered"><span>ROUND TRIP STATUS</span><strong>100% COVERED BY ME</strong></div>
             </div>
-
-            <div className="field-pair">
-              <label>
-                <span>Region</span>
-                <select
-                  value={form.region}
-                  onChange={(event) =>
-                    updateForm("region", event.target.value as Region)
-                  }
-                >
-                  {regions.map((region) => (
-                    <option key={region}>{region}</option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                <span>Visited</span>
-                <input
-                  type="date"
-                  value={form.visitedAt}
-                  onChange={(event) =>
-                    updateForm("visitedAt", event.target.value)
-                  }
-                />
-              </label>
-            </div>
-
-            <fieldset className="segmented-field">
-              <legend>Rating</legend>
-              <div className="segmented-control">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <button
-                    className={form.rating === rating ? "is-active" : ""}
-                    key={rating}
-                    type="button"
-                    onClick={() => updateForm("rating", rating)}
-                    aria-pressed={form.rating === rating}
-                  >
-                    {rating}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset className="segmented-field">
-              <legend>Pace</legend>
-              <div className="pace-grid">
-                {paces.map((pace) => (
-                  <button
-                    className={form.pace === pace ? "is-active" : ""}
-                    key={pace}
-                    type="button"
-                    onClick={() => updateForm("pace", pace)}
-                    aria-pressed={form.pace === pace}
-                  >
-                    {pace}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset className="style-picker">
-              <legend>Styles</legend>
-              <div>
-                {styleOptions.map((style) => (
-                  <label key={style}>
-                    <input
-                      type="checkbox"
-                      checked={form.styles.includes(style)}
-                      onChange={() => toggleStyle(style)}
-                    />
-                    <span>{style}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            <label>
-              <span>Highlight</span>
-              <input
-                value={form.highlight}
-                onChange={(event) =>
-                  updateForm("highlight", event.target.value)
-                }
-                placeholder="Market morning"
-              />
-            </label>
-
-            <label>
-              <span>Memory</span>
-              <textarea
-                value={form.memory}
-                onChange={(event) => updateForm("memory", event.target.value)}
-                placeholder="What made this place stay with you?"
-                rows={4}
-              />
-            </label>
-
-            <button className="primary-button" type="submit">
-              <span aria-hidden="true">+</span>
-              Add place
-            </button>
-          </form>
-        </aside>
-      </section>
-
-      <section className="insight-band" aria-label="Travel style mix">
-        <div>
-          <p className="eyebrow">Travel style mix</p>
-          <h2>{`${travelerName || "Traveler"}'s taste map`}</h2>
-        </div>
-
-        <div className="style-bars">
-          {styleOptions.map((style) => {
-            const count = profile.styleCounts[style];
-            const width = `${Math.max((count / profile.maxCount) * 100, count ? 16 : 0)}%`;
-
-            return (
-              <div className="style-meter" key={style}>
-                <span>{style}</span>
-                <div aria-hidden="true">
-                  <i style={{ width }} />
-                </div>
-                <strong>{count}</strong>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="journal-section" id="journal" aria-label="Travel log">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Passport shelf</p>
-            <h2>Places traveled</h2>
           </div>
-          <p>{profile.latest ? `Latest: ${profile.latest.place}` : "No stamps"}</p>
-        </div>
+        </section>
 
-        <div className="place-grid">
-          {profile.sortedEntries.map((entry) => (
-            <article className="place-card" key={entry.id}>
-              <div className="place-card-head">
-                <div>
-                  <p>{formatVisitDate(entry.visitedAt)}</p>
-                  <h3>{entry.place}</h3>
-                  <span>{entry.country}</span>
-                </div>
-                <button
-                  className="icon-button small"
-                  type="button"
-                  onClick={() => removeEntry(entry.id)}
-                  aria-label={`Remove ${entry.place}`}
-                  title={`Remove ${entry.place}`}
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="rating-row" aria-label={`${entry.rating} out of 5`}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <span
-                    className={index < entry.rating ? "is-filled" : ""}
-                    key={index}
-                  />
-                ))}
-              </div>
-
-              <p className="highlight">{entry.highlight || entry.pace}</p>
-              <p>{entry.memory || "No memory note yet."}</p>
-
-              <div className="card-tags">
-                <span>{entry.region}</span>
-                <span>{entry.pace}</span>
-                {entry.styles.slice(0, 3).map((style) => (
-                  <span key={style}>{style}</span>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="ecosystem-section" id="ecosystem" aria-label="Travel ecosystem">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Ecosystem</p>
-            <h2>Profile layers</h2>
+        <section className="countdown-section section">
+          <div className="countdown-copy"><p className="kicker red">RENDEZVOUS // DECEMBER 17, 2026</p><h2>ASSEMBLE IN</h2></div>
+          <div className="countdown" aria-label="Countdown to December 17, 2026">
+            {[[countdown.days, "DAYS"], [countdown.hours, "HOURS"], [countdown.minutes, "MINUTES"], [countdown.seconds, "SECONDS"]].map(([value, label]) => <div key={label}><strong>{pad(Number(value))}</strong><span>{label}</span></div>)}
           </div>
-          <p>{profile.signatureTitle}</p>
-        </div>
-
-        <div className="ecosystem-grid">
-          <article>
-            <span className="layer-index">01</span>
-            <h3>Origin stamp</h3>
-            <p>
-              {profile.origin
-                ? `${profile.origin.place}, ${profile.origin.country} defines the first profile signal.`
-                : "No origin stamp yet."}
-            </p>
-          </article>
-
-          <article>
-            <span className="layer-index">02</span>
-            <h3>Diary taste</h3>
-            <p>
-              {profile.dominant[0]
-                ? `${profile.dominant[0].style} leads the travel style mix across ${entries.length} stamps.`
-                : "Style mix is waiting for the first trip."}
-            </p>
-          </article>
-
-          <article>
-            <span className="layer-index">03</span>
-            <h3>Lists</h3>
-            <p>
-              {profile.latest
-                ? `${profile.latest.highlight || profile.latest.place} can become a collection seed.`
-                : "Collections begin from saved highlights."}
-            </p>
-          </article>
-
-          <article>
-            <span className="layer-index">04</span>
-            <h3>People</h3>
-            <p>
-              Taste matches can connect travelers through shared ratings, styles, and origin stamps.
-            </p>
-          </article>
-        </div>
-      </section>
+          <div className="final-copy"><span className="giant-twenty">20</span><div><p>HAPPY BIRTHDAY, ANANYA.</p><h2>YOUR NEXT ERA<br />STARTS NOW.</h2><small>— WITH LOVE, FROM YOUR MISSION HANDLER</small></div></div>
+          <button className="accept-button" onClick={() => setAccepted(true)} disabled={accepted}>{accepted ? "MISSION ACCEPTED ✓" : "ACCEPT THE MISSION"}</button>
+          {accepted && <div className="accepted-message" role="status">CLEARANCE GRANTED · SEE YOU ON DECEMBER 17, AGENT ANANYA.</div>}
+          {accepted && <div className="confetti" aria-hidden="true">{Array.from({ length: 30 }, (_, index) => <i key={index} style={{ "--i": index } as React.CSSProperties} />)}</div>}
+        </section>
+        <footer><Shield small /><span>SECURE TRANSMISSION ENDS</span><span>FILE A-20-1217</span></footer>
+      </div>
     </main>
   );
 }

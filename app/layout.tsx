@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Travellore",
-  description: "A travel profile studio for logging places and shaping a traveler signature.",
+  title: "Agent Ananya // Level 20",
+  description: "A classified birthday mission for Agent Ananya.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

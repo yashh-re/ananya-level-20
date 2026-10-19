@@ -43,5 +43,6 @@ next-env.d.ts
 /.xdg/
 /.chrome-profile/
 /.chrome-profile-mobile/
+/.chrome-profile-ticket/
 /dev-server*.log
 /visual-*.png
