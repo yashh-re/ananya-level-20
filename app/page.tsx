@@ -28,6 +28,18 @@ function Shield({ small = false }: { small?: boolean }) {
   );
 }
 
+function SignalIcon({ type }: { type: "gotham" | "wizard" | "demigod" }) {
+  if (type === "gotham") {
+    return <svg className="signal-icon" viewBox="0 0 64 48" aria-hidden="true" shapeRendering="crispEdges"><path d="M4 12h10V6h8v8h20V6h8v6h10v8h-6v8h-8v8H36v8h-8v-8H18v-8h-8v-8H4Z" /></svg>;
+  }
+
+  if (type === "wizard") {
+    return <svg className="signal-icon" viewBox="0 0 64 48" aria-hidden="true" shapeRendering="crispEdges"><path d="M5 24h5v-8h8v-4h8v4h4v8h4v-8h8v-4h8v4h8v8h-4v8h-8v4h-8v-4h-4v-6h-4v6h-4v4h-8v-4h-8v-8H5Zm9-4v8h8v-8h-8Zm28 0v8h8v-8h-8ZM34 0h10l-8 12h8L28 30l6-14h-8Z" /></svg>;
+  }
+
+  return <svg className="signal-icon" viewBox="0 0 64 48" aria-hidden="true" shapeRendering="crispEdges"><path d="M28 4h8v16h6V10h6v14l-12 8v12h-8V32l-12-8V10h6v10h6V4Zm-22 36h16v4H6v-4Zm36 0h16v4H42v-4Z" /></svg>;
+}
+
 export default function Home() {
   const [entered, setEntered] = useState(false);
   const [identityConfirmed, setIdentityConfirmed] = useState(false);
@@ -158,8 +170,15 @@ export default function Home() {
             <a className="primary-cta" href="#briefing">OPEN MISSION FILE <span>↓</span></a>
           </div>
           <div className="hero-visual" aria-hidden="true">
-            <div className="doom-core"><span>20</span><small>LEVEL</small></div><div className="radar radar-a" /><div className="radar radar-b" />
-            <span className="coordinate coord-a">17.3850° N // 78.4867° E</span><span className="coordinate coord-b">HYDERABAD // EARTH-616</span>
+            <div className="crossover-console">
+              <div className="console-head"><span>ANANYA&apos;S MULTIVERSE LOADOUT</span><b>3 SIGNALS FOUND</b></div>
+              <div className="signal-grid">
+                <div className="signal-card"><SignalIcon type="gotham" /><span>GOTHAM FILE</span><b>THE NIGHT SIGNAL</b><small>DC // DETECTIVE MODE</small></div>
+                <div className="signal-card"><SignalIcon type="wizard" /><span>WIZARD FILE</span><b>PLATFORM 9¾</b><small>MAGIC // MISCHIEF MANAGED</small></div>
+                <div className="signal-card"><SignalIcon type="demigod" /><span>DEMIGOD FILE</span><b>CAMP HALF-BLOOD</b><small>SEA // TRIDENT ACTIVE</small></div>
+              </div>
+              <div className="console-foot"><span>HYDERABAD // EARTH-616</span><strong>LEVEL 20</strong><span>ALL WORLDS ONLINE</span></div>
+            </div>
           </div>
           <div className="scroll-cue"><i /> SCROLL TO DECLASSIFY</div>
         </section>
