@@ -130,7 +130,8 @@ export default function Home() {
                 <p className="kicker">PERCY PROTOCOL ACCEPTED</p>
                 <h1>HAPPY 20<br /><span>ANANYA</span></h1>
                 <div className="identity-readout">
-                  <span>SUBJECT</span><strong>ANANYA</strong><span>CLEARANCE</span><strong>LEVEL 20</strong>
+                  <span>SUBJECT</span><strong>ANANYA</strong><span>ORIGIN</span><strong>HYDERABAD</strong>
+                  <span>CLEARANCE</span><strong>LEVEL 20</strong><span>STATUS</span><strong>LEGEND</strong>
                 </div>
                 <button className="access-button" onClick={enterDossier}><span>UNLOCK CLEARANCE 20 GIFT</span><b aria-hidden="true">→</b></button>
                 <p className="microcopy">IDENTITY VERIFIED · GIFT CLEARANCE AVAILABLE</p>
@@ -148,16 +149,17 @@ export default function Home() {
         </nav>
 
         <section className="hero" id="top">
+          <div className="pixel-marquee" aria-hidden="true"><span>HYDERABAD ✦ WEST LAFAYETTE ✦ EARTH-616 ✦ LEVEL 20 ✦ HYDERABAD ✦ WEST LAFAYETTE ✦ EARTH-616 ✦ LEVEL 20 ✦</span></div>
           <div className="hero-orbit orbit-one" aria-hidden="true" /><div className="hero-orbit orbit-two" aria-hidden="true" />
           <div className="hero-copy">
             <p className="kicker red">● PRIORITY ALPHA · PERSONAL FILE</p><p className="happy">HAPPY</p>
             <div className="twenty-wrap"><span className="twenty">20</span><span className="agent-name">AGENT<br /><b>ANANYA</b></span></div>
-            <p className="hero-intro">Twenty years of origin stories, plot twists, and saving the day. Your next mission has officially been declassified.</p>
+            <p className="hero-intro">20 years is wild, so here&apos;s to 7 years down and about 67 more years to go ( ihope )</p>
             <a className="primary-cta" href="#briefing">OPEN MISSION FILE <span>↓</span></a>
           </div>
           <div className="hero-visual" aria-hidden="true">
             <div className="doom-core"><span>20</span><small>LEVEL</small></div><div className="radar radar-a" /><div className="radar radar-b" />
-            <span className="coordinate coord-a">41.8781° N</span><span className="coordinate coord-b">EARTH-616</span>
+            <span className="coordinate coord-a">17.3850° N // 78.4867° E</span><span className="coordinate coord-b">HYDERABAD // EARTH-616</span>
           </div>
           <div className="scroll-cue"><i /> SCROLL TO DECLASSIFY</div>
         </section>
@@ -168,7 +170,7 @@ export default function Home() {
             <div className="briefing-copy">
               <p className="kicker">CLASSIFIED // LEVEL 20 ACCESS</p><h2>THE WORLD IS<br /><em>ABOUT TO CHANGE.</em></h2>
               <p className="lead">And you have front-row clearance to witness it.</p>
-              <p>An inter-dimensional event has been detected. Heroes will assemble. Worlds will collide. One agent has been selected for an advance screening of the next chapter.</p>
+              <p>An inter-dimensional event has been detected. Heroes will assemble. Worlds will collide. One Hyderabad original has been selected for an advance screening of the next chapter.</p>
               <div className="assignment"><span>ASSIGNMENT</span><strong>WATCH THE DOOMSDAY PROTOCOL UNFOLD.</strong></div>
             </div>
             <div className="intel-card">
@@ -188,7 +190,7 @@ export default function Home() {
               <div className="ticket-brand"><Shield small /><span>MARVEL STUDIOS<br /><b>AVENGERS: DOOMSDAY</b></span></div>
               <div className="ticket-title"><span>ADVANCE PREVIEW</span><strong>17<span>DEC</span></strong></div>
               <div className="ticket-details">
-                <div><span>AGENT</span><b>ANANYA</b></div><div><span>CLEARANCE</span><b>LEVEL 20</b></div><div><span>ADMIT</span><b>ONE HERO</b></div><div><span>LOCATION</span><b>TO BE DECLASSIFIED</b></div>
+                <div><span>AGENT</span><b>ANANYA</b></div><div><span>ORIGIN</span><b>HYDERABAD</b></div><div><span>ADMIT</span><b>ONE HERO</b></div><div><span>LOCATION</span><b>TO BE DECLASSIFIED</b></div>
               </div>
               <p className="ticket-note">Your seat at the end of the world is secured.</p>
             </div>
