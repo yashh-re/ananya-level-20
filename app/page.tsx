@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const TARGET_DATE = new Date("2026-12-17T18:00:00");
@@ -48,6 +48,9 @@ export default function Home() {
   const [identityError, setIdentityError] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
+  const [trackTime, setTrackTime] = useState(0);
+  const [trackDuration, setTrackDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -74,27 +77,30 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!soundOn) return;
-    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return;
-    const context = new AudioContextClass();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(110, context.currentTime);
-    gain.gain.setValueAtTime(0.0001, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.03, context.currentTime + 0.2);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 1.4);
-    oscillator.connect(gain).connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 1.5);
-    return () => void context.close();
-  }, [soundOn]);
-
   function enterDossier() {
     setEntered(true);
-    setSoundOn(true);
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = 0.65;
+      void audio.play().then(() => setSoundOn(true)).catch(() => setSoundOn(false));
+    }
+  }
+
+  function toggleAudio() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) {
+      void audio.play().then(() => setSoundOn(true)).catch(() => setSoundOn(false));
+    } else {
+      audio.pause();
+      setSoundOn(false);
+    }
+  }
+
+  function formatTime(value: number) {
+    if (!Number.isFinite(value)) return "0:00";
+    const minutes = Math.floor(value / 60);
+    return `${minutes}:${String(Math.floor(value % 60)).padStart(2, "0")}`;
   }
 
   function confirmIdentity(event: FormEvent<HTMLFormElement>) {
@@ -111,6 +117,16 @@ export default function Home() {
 
   return (
     <main className={entered ? "site is-entered" : "site"}>
+      <audio
+        ref={audioRef}
+        src="/illuminati.mp3"
+        loop
+        preload="metadata"
+        onPlay={() => setSoundOn(true)}
+        onPause={() => setSoundOn(false)}
+        onTimeUpdate={(event) => setTrackTime(event.currentTarget.currentTime)}
+        onLoadedMetadata={(event) => setTrackDuration(event.currentTarget.duration)}
+      />
       {!entered && (
         <section className="gate" aria-label="Classified birthday transmission">
           <div className="gate-grid" aria-hidden="true" />
@@ -166,8 +182,16 @@ export default function Home() {
         <nav className="nav-shell">
           <a className="brand" href="#top" aria-label="SHIELD birthday command home"><Shield small /><span><b>S.H.I.E.L.D.</b><small>SPECIAL BIRTHDAY DIVISION</small></span></a>
           <div className="nav-links"><a href="#briefing">Briefing</a><a href="#ticket">Clearance</a><a href="#transport">Transport</a></div>
-          <button className="sound-button" onClick={() => setSoundOn((value) => !value)} aria-label="Toggle interface sound"><span className={soundOn ? "sound-bars is-on" : "sound-bars"}><i /><i /><i /></span>{soundOn ? "AUDIO ON" : "AUDIO OFF"}</button>
+          <button className="sound-button" onClick={toggleAudio} aria-label={soundOn ? "Pause Illuminati" : "Play Illuminati"}><span className={soundOn ? "sound-bars is-on" : "sound-bars"}><i /><i /><i /></span>{soundOn ? "NOW PLAYING" : "PLAY TRACK"}</button>
         </nav>
+
+        <aside className="music-player" aria-label="Soundtrack player">
+          <Image className="album-cover" src="/illuminati-cover.png" alt="Illuminati from Aavesham cover art" width={500} height={500} />
+          <div className="track-copy"><small>MISSION SOUNDTRACK // 01</small><strong>ILLUMINATI</strong><span>AAVESHAM · SUSHIN SHYAM</span>
+            <label className="track-progress"><span>{formatTime(trackTime)}</span><input aria-label="Song position" type="range" min="0" max={trackDuration || 1} step="1" value={Math.min(trackTime, trackDuration || 1)} onChange={(event) => { if (audioRef.current) audioRef.current.currentTime = Number(event.target.value); }} /><span>{formatTime(trackDuration)}</span></label>
+          </div>
+          <button className="player-toggle" onClick={toggleAudio} aria-label={soundOn ? "Pause Illuminati" : "Play Illuminati"}>{soundOn ? "Ⅱ" : "▶"}</button>
+        </aside>
 
         <section className="hero" id="top">
           <div className="pixel-marquee" aria-hidden="true"><span>HYDERABAD ✦ WEST LAFAYETTE ✦ EARTH-616 ✦ LEVEL 20 ✦ HYDERABAD ✦ WEST LAFAYETTE ✦ EARTH-616 ✦ LEVEL 20 ✦</span></div>
@@ -180,13 +204,17 @@ export default function Home() {
           </div>
           <div className="hero-visual" aria-hidden="true">
             <div className="crossover-console">
-              <div className="console-head"><span>ANANYA&apos;S MULTIVERSE LOADOUT</span><b>3 SIGNALS FOUND</b></div>
-              <div className="signal-grid">
-                <div className="signal-card"><SignalIcon type="gotham" /><span>GOTHAM FILE</span><b>THE NIGHT SIGNAL</b><small>DC // DETECTIVE MODE</small></div>
-                <div className="signal-card"><SignalIcon type="wizard" /><span>WIZARD FILE</span><b>PLATFORM 9¾</b><small>MAGIC // MISCHIEF MANAGED</small></div>
-                <div className="signal-card"><SignalIcon type="demigod" /><span>DEMIGOD FILE</span><b>CAMP HALF-BLOOD</b><small>SEA // TRIDENT ACTIVE</small></div>
+              <div className="console-head"><span>ANANYA&apos;S MULTIVERSE ARCHIVE</span><b>CREATIVE MOOD.ID</b></div>
+              <div className="console-body">
+                <div className="signal-grid">
+                  <div className="signal-card"><SignalIcon type="gotham" /><span>GOTHAM</span><b>DETECTIVE MODE</b></div>
+                  <div className="signal-card"><SignalIcon type="wizard" /><span>WIZARDING WORLD</span><b>PLATFORM 9¾</b></div>
+                  <div className="signal-card"><SignalIcon type="demigod" /><span>CAMP HALF-BLOOD</span><b>TRIDENT ACTIVE</b></div>
+                </div>
+                <div className="feature-file"><small>SUBJECT // EARTH-616</small><strong>ANANYA</strong><span>LEVEL 20</span><p>Hyderabad original. Multiverse main character. Cleared for one extremely classified birthday mission.</p><i>AVENGERS</i></div>
+                <div className="file-tabs"><span>AVENGERS</span><span>HISTOGRAM</span><span>POSTER</span><span>STORYTELLING</span></div>
               </div>
-              <div className="console-foot"><span>HYDERABAD // EARTH-616</span><strong>LEVEL 20</strong><span>ALL WORLDS ONLINE</span></div>
+              <div className="console-foot"><span>HYDERABAD // WEST LAFAYETTE</span><strong>20</strong><span>ALL WORLDS ONLINE</span></div>
             </div>
           </div>
           <div className="scroll-cue"><i /> SCROLL TO DECLASSIFY</div>
