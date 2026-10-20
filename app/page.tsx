@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const TARGET_DATE = new Date("2026-12-17T18:00:00");
+const MEMORIES = Array.from({ length: 15 }, (_, index) => `/memories/memory-${String(index + 1).padStart(2, "0")}.jpg`);
 
 function pad(value: number) {
   return String(Math.max(0, value)).padStart(2, "0");
@@ -50,6 +51,7 @@ export default function Home() {
   const [soundOn, setSoundOn] = useState(false);
   const [trackTime, setTrackTime] = useState(0);
   const [trackDuration, setTrackDuration] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -76,6 +78,12 @@ export default function Home() {
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (!entered) return;
+    const slideshow = window.setInterval(() => setCurrentSlide((slide) => (slide + 1) % MEMORIES.length), 4500);
+    return () => window.clearInterval(slideshow);
+  }, [entered]);
 
   function enterDossier() {
     setEntered(true);
@@ -211,7 +219,15 @@ export default function Home() {
                   <div className="signal-card"><SignalIcon type="wizard" /><span>WIZARDING WORLD</span><b>PLATFORM 9¾</b></div>
                   <div className="signal-card"><SignalIcon type="demigod" /><span>CAMP HALF-BLOOD</span><b>TRIDENT ACTIVE</b></div>
                 </div>
-                <div className="feature-file"><small>SUBJECT // EARTH-616</small><strong>ANANYA</strong><span>LEVEL 20</span><p>Hyderabad original. Multiverse main character. Cleared for one extremely classified birthday mission.</p><i>AVENGERS</i></div>
+                <div className="feature-file">
+                  <div className="slideshow-frame">
+                    <Image className="memory-image" src={MEMORIES[currentSlide]} alt={`Ananya birthday memory ${currentSlide + 1}`} fill sizes="(max-width: 720px) 100vw, 48vw" priority={currentSlide === 0} />
+                    <div className="memory-shade" />
+                    <div className="memory-label"><small>MEMORY ARCHIVE // {String(currentSlide + 1).padStart(2, "0")}</small><strong>ANANYA</strong><span>LEVEL 20</span></div>
+                    <div className="slide-controls"><button onClick={() => setCurrentSlide((slide) => (slide - 1 + MEMORIES.length) % MEMORIES.length)} aria-label="Previous memory">←</button><div>{MEMORIES.map((_, index) => <button key={index} className={index === currentSlide ? "is-active" : ""} onClick={() => setCurrentSlide(index)} aria-label={`Show memory ${index + 1}`} />)}</div><button onClick={() => setCurrentSlide((slide) => (slide + 1) % MEMORIES.length)} aria-label="Next memory">→</button></div>
+                  </div>
+                  <i>AVENGERS</i>
+                </div>
                 <div className="file-tabs"><span>AVENGERS</span><span>HISTOGRAM</span><span>POSTER</span><span>STORYTELLING</span></div>
               </div>
               <div className="console-foot"><span>HYDERABAD // WEST LAFAYETTE</span><strong>20</strong><span>ALL WORLDS ONLINE</span></div>
@@ -224,9 +240,8 @@ export default function Home() {
           <div className="section-number">01 / MISSION BRIEFING</div>
           <div className="briefing-grid">
             <div className="briefing-copy">
-              <p className="kicker">CLASSIFIED // LEVEL 20 ACCESS</p><h2>THE WORLD IS<br /><em>ABOUT TO CHANGE.</em></h2>
-              <p className="lead">And you have front-row clearance to witness it.</p>
-              <p>An inter-dimensional event has been detected. Heroes will assemble. Worlds will collide. One Hyderabad original has been selected for an advance screening of the next chapter.</p>
+              <p className="kicker">CLASSIFIED // LEVEL 20 ACCESS</p><h2>NOW COMING TO<br /><em>YOUR GIFT.</em></h2>
+              <p className="lead">Thought a lot about what to give and honestly what can quite beat watching the best movie ever with the best person ever (me lol..jk .. not really)</p>
               <div className="assignment"><span>ASSIGNMENT</span><strong>WATCH THE DOOMSDAY PROTOCOL UNFOLD.</strong></div>
             </div>
             <div className="intel-card">
