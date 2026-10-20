@@ -271,7 +271,7 @@ export default function Home() {
           <div className="hero-copy">
             <p className="kicker red">● PRIORITY ALPHA · PERSONAL FILE</p><p className="happy">HAPPY</p>
             <div className="twenty-wrap"><span className="twenty">20</span><span className="agent-name">AGENT<br /><b>ANANYA</b></span></div>
-            <p className="hero-intro">20 years is wild, so here&apos;s to 7 years down and about 67 more years to go ( ihope )</p>
+            <p className="hero-intro">20 is wild, the fact that we&apos;ve known each other 8 years is wilder, so here&apos;s to at least 40 more (+ more hopefully)</p>
             <a className="primary-cta" href="#briefing">OPEN MISSION FILE <span>↓</span></a>
           </div>
           <div className="hero-visual" aria-hidden="true">
