@@ -362,7 +362,7 @@ export default function Home() {
           <div className="countdown" aria-label="Countdown to December 17, 2026">
             {[[countdown.days, "DAYS"], [countdown.hours, "HOURS"], [countdown.minutes, "MINUTES"], [countdown.seconds, "SECONDS"]].map(([value, label]) => <div key={label}><strong>{pad(Number(value))}</strong><span>{label}</span></div>)}
           </div>
-          <div className="final-copy"><span className="giant-twenty">20</span><div><p>HAPPY BIRTHDAY, ANANYA.</p><h2>YOUR NEXT ERA<br />STARTS NOW.</h2><small>— WITH LOVE, FROM YOUR MISSION HANDLER</small></div></div>
+          <div className="final-copy"><span className="giant-twenty">20</span><div><p>HAPPY BIRTHDAY MOWAA</p><h2>LOVE YOU,<br />DAY 1 ALWAYS.</h2><div className="closing-note">rockwell - gaudium - indiana - universal - greece - back to hyd, die and you me rrr and vanya can haunt streets of charminar (lowk sounds fun as hell)</div></div></div>
           <button className="accept-button" onClick={() => setAccepted(true)} disabled={accepted}>{accepted ? "MISSION ACCEPTED ✓" : "ACCEPT THE MISSION"}</button>
           {accepted && <div className="accepted-message" role="status">CLEARANCE GRANTED · SEE YOU ON DECEMBER 17, AGENT ANANYA.</div>}
           {accepted && <div className="confetti" aria-hidden="true">{Array.from({ length: 30 }, (_, index) => <i key={index} style={{ "--i": index } as React.CSSProperties} />)}</div>}

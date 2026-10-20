@@ -105,3 +105,4 @@ body::before{opacity:.08;background:repeating-linear-gradient(0deg,transparent 0
 .match-feedback{min-height:18px;margin:12px 0 0;color:#7798af;font:400 .48rem/1.6 var(--pixel);letter-spacing:.02em}.match-feedback.is-wrong{color:#ff7b85}.match-feedback.is-correct{color:var(--orange)}
 .clearance-won{animation:reveal .55s ease both}
 @media(max-width:620px){.gate:has(.match-stage) .gate-content{width:calc(100vw - 24px);padding-block:22px}.match-stage h1{font-size:clamp(2.7rem,14vw,4.3rem)}.quote-card{min-height:130px;padding:15px}.friend-roster{grid-template-columns:repeat(2,1fr);gap:6px}.friend-roster button{min-height:36px;font-size:.62rem}.match-feedback{font-size:.42rem}.gate:has(.match-stage) .personality-sticker{opacity:.18}}
+.closing-note{max-width:680px;color:#86d9ff;font:500 clamp(.68rem,1.2vw,.86rem)/1.7 var(--mono);letter-spacing:.045em;text-transform:none}
