@@ -323,7 +323,7 @@ export default function Home() {
             <div className="briefing-copy">
               <p className="kicker">CLASSIFIED // LEVEL 20 ACCESS</p><h2>NOW COMING TO<br /><em>YOUR GIFT.</em></h2>
               <p className="lead">Thought a lot about what to give you, and honestly, what can quite beat watching the best movie ever with the best person ever? (me... jkjk... but srsly tho)</p>
-              <div className="assignment"><span>ASSIGNMENT</span><strong>WATCH THE DOOMSDAY PROTOCOL UNFOLD.</strong></div>
+              <div className="assignment"><span>ASSIGNMENT</span><strong>AVENGERS DOOMSDAY PREMIERE SHOW DOLBY VISION</strong></div>
             </div>
             <div className="intel-card">
               <div className="intel-top"><span>THREAT ASSESSMENT</span><b>OMEGA</b></div>
