@@ -13,7 +13,7 @@ const QUOTE_CHALLENGE = [
   { person: "Pandu", quote: "Manam Manam dosthulam chettu meeda kothulam." },
   { person: "RRR", quote: "Psycho Munda of my heart" },
   { person: "Neeha", quote: "Ananya is fun, crazy, gudhabal overall all in one package" },
-  { person: "Shreya", quote: "shed fierce, incredibly caring, and honestly the best person to have a good time with" },
+  { person: "Shreya", quote: "she’s fierce, incredibly caring, and honestly the best person to have a good time with" },
   { person: "Shashank", quote: "Pain in my ass" },
   { person: "Yash", quote: "Independent Hardworking 20 year old hardcore Telangana that loves Tamil and Mallu boys" },
 ];
@@ -288,7 +288,7 @@ export default function Home() {
           <div className="hero-copy">
             <p className="kicker red">● PRIORITY ALPHA · PERSONAL FILE</p><p className="happy">HAPPY</p>
             <div className="twenty-wrap"><span className="twenty">20</span><span className="agent-name">AGENT<br /><b>ANANYA</b></span></div>
-            <p className="hero-intro">20 is wild, the fact that we&apos;ve known each other 8 years is wilder, so here&apos;s to at least 40 more (+ more hopefully)</p>
+            <p className="hero-intro">The fact that we&apos;ve known each other for 8 years is wild, the fact that we are TWENTYY is wilder, so here&apos;s to at least 40 more (+ kudurthe inkekkua but kashtam le)</p>
             <a className="primary-cta" href="#briefing">OPEN MISSION FILE <span>↓</span></a>
           </div>
           <div className="hero-visual" aria-hidden="true">
@@ -322,7 +322,7 @@ export default function Home() {
           <div className="briefing-grid">
             <div className="briefing-copy">
               <p className="kicker">CLASSIFIED // LEVEL 20 ACCESS</p><h2>NOW COMING TO<br /><em>YOUR GIFT.</em></h2>
-              <p className="lead">Thought a lot about what to give and honestly what can quite beat watching the best movie ever with the best person ever (me lol..jk .. not really)</p>
+              <p className="lead">Thought a lot about what to give you, and honestly, what can quite beat watching the best movie ever with the best person ever? (me... jkjk... but srsly tho)</p>
               <div className="assignment"><span>ASSIGNMENT</span><strong>WATCH THE DOOMSDAY PROTOCOL UNFOLD.</strong></div>
             </div>
             <div className="intel-card">
@@ -379,7 +379,7 @@ export default function Home() {
           <div className="countdown" aria-label="Countdown to December 17, 2026">
             {[[countdown.days, "DAYS"], [countdown.hours, "HOURS"], [countdown.minutes, "MINUTES"], [countdown.seconds, "SECONDS"]].map(([value, label]) => <div key={label}><strong>{pad(Number(value))}</strong><span>{label}</span></div>)}
           </div>
-          <div className="final-copy"><span className="giant-twenty">20</span><div><p>HAPPY BIRTHDAY MOWAA</p><h2>LOVE YOU,<br />DAY 1 ALWAYS.</h2><div className="closing-note">rockwell - gaudium - indiana - universal - greece - back to hyd, die and you me rrr and vanya can haunt streets of charminar (lowk sounds fun as hell)</div></div></div>
+          <div className="final-copy"><span className="giant-twenty">20</span><div><p>HAPPY BIRTHDAY MOWAA</p><h2>LOVE YOU,<br />DAY 1 ALWAYS.</h2><div className="closing-note">rockwell → gaudium → indiana → universal → New York → ZNMD Europe bachelorette for Vanya (cuz other 3 doubt ee) → back to hyd → die in a weird hilarious way and then you, me, RRR and Vanya can haunt streets of Charminar for the next century (lowk sounds fun as hell)</div></div></div>
           <button className="accept-button" onClick={() => setAccepted(true)} disabled={accepted}>{accepted ? "MISSION ACCEPTED ✓" : "ACCEPT THE MISSION"}</button>
           {accepted && <div className="accepted-message" role="status">CLEARANCE GRANTED · SEE YOU ON DECEMBER 17, AGENT ANANYA.</div>}
           {accepted && <div className="confetti" aria-hidden="true">{Array.from({ length: 30 }, (_, index) => <i key={index} style={{ "--i": index } as React.CSSProperties} />)}</div>}
