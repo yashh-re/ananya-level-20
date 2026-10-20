@@ -139,6 +139,13 @@ export default function Home() {
         <section className="gate" aria-label="Classified birthday transmission">
           <div className="gate-grid" aria-hidden="true" />
           <div className="gate-scan" aria-hidden="true" />
+          <div className="personality-collage" aria-hidden="true">
+            <figure className="personality-sticker sticker-camp"><Image src="/personality/camp-half-blood.webp" alt="" width={900} height={900} /><figcaption>DEMIGOD ENERGY</figcaption></figure>
+            <figure className="personality-sticker sticker-hat"><Image src="/personality/sorting-hat.webp" alt="" width={900} height={786} /><figcaption>MISCHIEF MANAGED</figcaption></figure>
+            <figure className="personality-sticker sticker-charminar"><Image src="/personality/charminar.webp" alt="" width={819} height={900} /><figcaption>HYDERABAD HOMEBASE</figcaption></figure>
+            <figure className="personality-sticker sticker-sunrisers"><Image src="/personality/sunrisers.webp" alt="" width={600} height={900} /><figcaption>ORANGE ARMY</figcaption></figure>
+            <figure className="personality-sticker sticker-camera"><Image src="/personality/camera.webp" alt="" width={766} height={900} /><figcaption>MEMORY KEEPER</figcaption></figure>
+          </div>
           <div className="gate-content">
             {!identityConfirmed ? (
               <>

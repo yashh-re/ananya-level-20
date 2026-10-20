@@ -68,3 +68,19 @@ body::before{opacity:.08;background:repeating-linear-gradient(0deg,transparent 0
 .transport{background:linear-gradient(180deg,#02070d,#061523)}.transport-grid .lead{color:#aec3d2!important}.route-point i{border-color:var(--scarlet);background:#04111d;color:var(--orange)}.route-point.destination i{border-color:var(--orange);background:var(--orange);box-shadow:0 0 25px rgba(213,255,79,.3);color:#02070d}.route-line{border-color:var(--scarlet)}.route-line i{background:var(--orange);box-shadow:0 0 8px var(--orange)}.mission-includes{border-color:#17415c;background:#17415c}.mission-includes>span{background:#061523}.mission-includes i,.covered strong{color:var(--orange)}.covered{border-color:#17415c}
 .countdown-section{background:radial-gradient(circle at 50% 20%,rgba(35,120,255,.24),#02070d 56%)}.countdown{border-color:#1e5979;box-shadow:10px 10px 0 rgba(35,120,255,.35)}.countdown div{border-color:#1e5979;background:rgba(7,26,42,.78)}.countdown strong{font-family:"Bebas Neue",sans-serif;letter-spacing:.04em;text-shadow:3px 3px 0 #174ca8}.countdown span{color:var(--orange)}.giant-twenty{-webkit-text-stroke-color:var(--scarlet);filter:drop-shadow(7px 7px 0 #174ca8)}.final-copy>div{border-left-color:var(--orange)}.final-copy p,.accepted-message{color:var(--orange)}footer{border-color:#132c3e;background:#01050a;color:#6f8ba0}
 @media(max-width:720px){.ticket-section{background:#061421}.ticket-stub{border-color:#061421}.final-copy>div{border-top-color:var(--orange)}}
+
+/* Ananya personality sticker wall */
+.gate-content{z-index:4}
+.personality-collage{position:absolute;z-index:2;inset:0;pointer-events:none}
+.personality-sticker{position:absolute;display:grid;width:clamp(105px,11vw,175px);justify-items:center;margin:0;border:1px solid rgba(89,230,255,.45);background:rgba(4,17,29,.76);box-shadow:7px 7px 0 rgba(35,120,255,.38);padding:10px 10px 8px;backdrop-filter:blur(5px)}
+.personality-sticker::before{content:"";position:absolute;top:-7px;left:50%;width:44px;height:13px;background:rgba(213,255,79,.88);clip-path:polygon(5% 15%,100% 0,95% 90%,0 100%);transform:translateX(-50%)}
+.personality-sticker img{display:block;width:100%;height:clamp(78px,9vw,145px);object-fit:contain;filter:drop-shadow(0 7px 9px rgba(0,0,0,.42))}
+.personality-sticker figcaption{width:100%;border-top:1px solid rgba(89,230,255,.28);color:var(--orange);font:400 clamp(5px,.42vw,7px)/1.5 var(--pixel);letter-spacing:.03em;padding-top:7px;text-align:center}
+.sticker-camp{top:10%;left:5%;transform:rotate(-6deg)}.sticker-camp img{filter:invert(1) drop-shadow(0 7px 9px rgba(0,0,0,.42))}
+.sticker-hat{top:9%;right:6%;transform:rotate(7deg)}
+.sticker-charminar{bottom:7%;left:4%;width:clamp(120px,13vw,205px);transform:rotate(3deg)}
+.sticker-sunrisers{right:4%;bottom:7%;width:clamp(110px,12vw,190px);transform:rotate(-5deg)}
+.sticker-camera{top:42%;left:12%;width:clamp(100px,10vw,160px);transform:rotate(8deg)}
+.sticker-camera::after{content:"REC ●";position:absolute;right:8px;top:8px;color:#ff5c68;font:600 7px var(--mono);letter-spacing:.08em}
+@media(max-width:1120px){.personality-sticker{opacity:.72}.sticker-camera{display:none}.sticker-camp{left:2%}.sticker-hat{right:2%}.sticker-charminar{left:1%}.sticker-sunrisers{right:1%}}
+@media(max-width:720px){.personality-sticker{width:72px;border-color:rgba(89,230,255,.3);box-shadow:3px 3px 0 rgba(35,120,255,.25);padding:5px;opacity:.55}.personality-sticker::before{width:25px;height:8px;top:-4px}.personality-sticker img{height:58px}.personality-sticker figcaption{display:none}.sticker-camp{top:5%;left:3%}.sticker-hat{top:4%;right:3%}.sticker-charminar{bottom:3%;left:2%;width:76px}.sticker-sunrisers{right:2%;bottom:3%;width:76px}.sticker-camera{display:none}}
