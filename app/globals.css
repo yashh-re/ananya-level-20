@@ -84,3 +84,24 @@ body::before{opacity:.08;background:repeating-linear-gradient(0deg,transparent 0
 .sticker-camera::after{content:"REC ●";position:absolute;right:8px;top:8px;color:#ff5c68;font:600 7px var(--mono);letter-spacing:.08em}
 @media(max-width:1120px){.personality-sticker{opacity:.72}.sticker-camera{display:none}.sticker-camp{left:2%}.sticker-hat{right:2%}.sticker-charminar{left:1%}.sticker-sunrisers{right:1%}}
 @media(max-width:720px){.personality-sticker{width:72px;border-color:rgba(89,230,255,.3);box-shadow:3px 3px 0 rgba(35,120,255,.25);padding:5px;opacity:.55}.personality-sticker::before{width:25px;height:8px;top:-4px}.personality-sticker img{height:58px}.personality-sticker figcaption{display:none}.sticker-camp{top:5%;left:3%}.sticker-hat{top:4%;right:3%}.sticker-charminar{bottom:3%;left:2%;width:76px}.sticker-sunrisers{right:2%;bottom:3%;width:76px}.sticker-camera{display:none}}
+
+/* Challenge 02: friendship transmission matching */
+.gate:has(.match-stage){overflow-y:auto}
+.gate:has(.match-stage) .gate-content{position:relative;inset:auto;width:min(760px,calc(100vw - 36px));max-width:760px;margin:auto;padding-block:32px}
+.match-stage .status-line{margin-bottom:16px}
+.match-stage .kicker{margin-bottom:8px}
+.match-stage h1{margin:0 0 16px;color:var(--paper);font-size:clamp(3.2rem,7vw,5.8rem);letter-spacing:.02em;line-height:.78;text-shadow:4px 4px 0 #174ca8}
+.match-stage h1 span{color:var(--orange);text-shadow:4px 4px 0 #174ca8}
+.match-progress{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 18px;margin:0 auto 14px;color:#8aa8bd;font:500 .55rem var(--mono);letter-spacing:.12em;text-align:left}
+.match-progress strong{color:var(--scarlet);font-size:.68rem}.match-progress>i{grid-column:1/-1;display:block;height:5px;background:#102b40;overflow:hidden}.match-progress>i b{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--scarlet),var(--orange));transition:width .35s ease}
+.quote-card{position:relative;min-height:112px;border:1px solid #21627f;background:linear-gradient(135deg,rgba(9,33,52,.97),rgba(3,13,22,.96));box-shadow:6px 6px 0 rgba(35,120,255,.28);padding:18px 22px;text-align:left}
+.quote-card::before{content:"“";position:absolute;right:15px;top:-18px;color:rgba(89,230,255,.12);font:700 7rem/1 Georgia,serif}
+.quote-card small{position:relative;z-index:1;color:var(--orange);font:400 .46rem/1.6 var(--pixel)}
+.quote-card blockquote{position:relative;z-index:1;margin:10px 0 0;color:#fff;font:600 clamp(1rem,2.2vw,1.35rem)/1.32 var(--display)}
+.friend-roster{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:14px}
+.friend-roster button{min-height:39px;border:1px solid #1d5877;background:#061624;color:#b9d3e5;font:600 .68rem var(--mono);letter-spacing:.04em;transition:.16s ease}
+.friend-roster button:hover:not(:disabled){border-color:var(--orange);background:var(--orange);color:#02070d;transform:translateY(-2px)}
+.friend-roster button:disabled{cursor:wait;opacity:.5}
+.match-feedback{min-height:18px;margin:12px 0 0;color:#7798af;font:400 .48rem/1.6 var(--pixel);letter-spacing:.02em}.match-feedback.is-wrong{color:#ff7b85}.match-feedback.is-correct{color:var(--orange)}
+.clearance-won{animation:reveal .55s ease both}
+@media(max-width:620px){.gate:has(.match-stage) .gate-content{width:calc(100vw - 24px);padding-block:22px}.match-stage h1{font-size:clamp(2.7rem,14vw,4.3rem)}.quote-card{min-height:130px;padding:15px}.friend-roster{grid-template-columns:repeat(2,1fr);gap:6px}.friend-roster button{min-height:36px;font-size:.62rem}.match-feedback{font-size:.42rem}.gate:has(.match-stage) .personality-sticker{opacity:.18}}

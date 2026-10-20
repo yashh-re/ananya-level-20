@@ -5,6 +5,18 @@ import Image from "next/image";
 
 const TARGET_DATE = new Date("2026-12-17T18:00:00");
 const MEMORIES = Array.from({ length: 15 }, (_, index) => `/memories/memory-${String(index + 1).padStart(2, "0")}.jpg`);
+const QUOTE_CHALLENGE = [
+  { person: "Anvitha", quote: "she makes u piss ur pants but in a nice warm way" },
+  { person: "Vanya", quote: "I love Ananya for being emotionally intellectual" },
+  { person: "Anish", quote: "Ananya is like a Christopher Nolan movie. You either understand or you don’t, but whatever it is you can’t deny she isn’t a fucking vibe. Absolute peak cinema. 🇵🇰" },
+  { person: "Pranav", quote: "Most sarcastic funny movie enthusiast person I know" },
+  { person: "Pandu", quote: "Manam Manam dosthulam chettu meeda kothulam." },
+  { person: "RRR", quote: "Psycho Munda of my heart" },
+  { person: "Neeha", quote: "Ananya is fun, crazy, gudhabal overall all in one package" },
+  { person: "Shreya", quote: "shed fierce, incredibly caring, and honestly the best person to have a good time with" },
+  { person: "Shashank", quote: "Pain in my ass" },
+  { person: "Yash", quote: "Independent Hardworking 20 year old hardcore Telangana that loves Tamil and Mallu boys" },
+];
 
 function pad(value: number) {
   return String(Math.max(0, value)).padStart(2, "0");
@@ -47,6 +59,11 @@ export default function Home() {
   const [identityConfirmed, setIdentityConfirmed] = useState(false);
   const [dogName, setDogName] = useState("");
   const [identityError, setIdentityError] = useState("");
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [quoteFeedback, setQuoteFeedback] = useState("");
+  const [quoteStatus, setQuoteStatus] = useState<"idle" | "correct" | "wrong">("idle");
+  const [matchedPeople, setMatchedPeople] = useState<string[]>([]);
+  const [quoteChallengeComplete, setQuoteChallengeComplete] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
   const [trackTime, setTrackTime] = useState(0);
@@ -123,6 +140,31 @@ export default function Home() {
     setIdentityError("ACCESS DENIED · THAT DOESN'T MATCH OUR RECORDS");
   }
 
+  function matchQuote(person: string) {
+    if (quoteStatus === "correct") return;
+    const answer = QUOTE_CHALLENGE[quoteIndex].person;
+
+    if (person !== answer) {
+      setQuoteStatus("wrong");
+      setQuoteFeedback("NO MATCH // TRY ANOTHER FRIEND");
+      return;
+    }
+
+    setQuoteStatus("correct");
+    setQuoteFeedback(`MATCH CONFIRMED // ${person.toUpperCase()}`);
+    window.setTimeout(() => {
+      const nextMatched = [...matchedPeople, person];
+      setMatchedPeople(nextMatched);
+      if (quoteIndex === QUOTE_CHALLENGE.length - 1) {
+        setQuoteChallengeComplete(true);
+      } else {
+        setQuoteIndex((index) => index + 1);
+        setQuoteStatus("idle");
+        setQuoteFeedback("");
+      }
+    }, 650);
+  }
+
   return (
     <main className={entered ? "site is-entered" : "site"}>
       <audio
@@ -175,18 +217,33 @@ export default function Home() {
                 </form>
                 <p className="microcopy">ENCRYPTED CONNECTION · ONE ATTEMPT AT A TIME</p>
               </>
+            ) : !quoteChallengeComplete ? (
+              <div className="confirmed-panel match-stage">
+                <div className="status-line"><i /> IDENTITY CONFIRMED // CHALLENGE 02</div>
+                <p className="kicker">FRIENDSHIP INTELLIGENCE ARCHIVE</p>
+                <h1>MATCH THE<br /><span>TRANSMISSION</span></h1>
+                <div className="match-progress"><span>FILES MATCHED</span><strong>{String(matchedPeople.length).padStart(2, "0")} / {QUOTE_CHALLENGE.length}</strong><i><b style={{ width: `${(matchedPeople.length / QUOTE_CHALLENGE.length) * 100}%` }} /></i></div>
+                <article className="quote-card">
+                  <small>A SENTENCE FOR ANANYA // FILE {String(quoteIndex + 1).padStart(2, "0")}</small>
+                  <blockquote>“{QUOTE_CHALLENGE[quoteIndex].quote}”</blockquote>
+                </article>
+                <div className="friend-roster" aria-label="Choose who said this">
+                  {QUOTE_CHALLENGE.filter(({ person }) => !matchedPeople.includes(person)).map(({ person }) => <button key={person} onClick={() => matchQuote(person)} disabled={quoteStatus === "correct"}>{person}</button>)}
+                </div>
+                <p className={`match-feedback is-${quoteStatus}`} aria-live="polite">{quoteFeedback || "SELECT THE FRIEND WHO SENT THIS TRANSMISSION"}</p>
+              </div>
             ) : (
-              <div className="confirmed-panel">
-                <div className="status-line"><i /> IDENTITY CONFIRMED</div>
+              <div className="confirmed-panel clearance-won">
+                <div className="status-line"><i /> ALL IDENTITIES CONFIRMED</div>
                 <Shield />
-                <p className="kicker">PERCY PROTOCOL ACCEPTED</p>
+                <p className="kicker">FRIENDSHIP ARCHIVE COMPLETE</p>
                 <h1>HAPPY 20<br /><span>ANANYA</span></h1>
                 <div className="identity-readout">
                   <span>SUBJECT</span><strong>ANANYA</strong><span>ORIGIN</span><strong>HYDERABAD</strong>
                   <span>CLEARANCE</span><strong>LEVEL 20</strong><span>STATUS</span><strong>LEGEND</strong>
                 </div>
                 <button className="access-button" onClick={enterDossier}><span>UNLOCK CLEARANCE 20 GIFT</span><b aria-hidden="true">→</b></button>
-                <p className="microcopy">IDENTITY VERIFIED · GIFT CLEARANCE AVAILABLE</p>
+                <p className="microcopy">ALL 10 TRANSMISSIONS MATCHED · GIFT CLEARANCE AVAILABLE</p>
               </div>
             )}
           </div>
