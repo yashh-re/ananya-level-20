@@ -18,6 +18,23 @@ const QUOTE_CHALLENGE = [
   { person: "Yash", quote: "Independent Hardworking 20 year old hardcore Telangana that loves Tamil and Mallu boys" },
 ];
 
+function getJumbledPeople(quoteIndex: number, matchedPeople: string[]) {
+  const available = QUOTE_CHALLENGE
+    .filter(({ person }) => !matchedPeople.includes(person))
+    .map(({ person }) => person)
+    .sort((a, b) => {
+      const score = (name: string) => [...name].reduce((total, character) => total + character.charCodeAt(0), quoteIndex * 47) % 101;
+      return score(a) - score(b);
+    });
+
+  const answer = QUOTE_CHALLENGE[quoteIndex].person;
+  if (available.length > 1 && available[0] === answer) {
+    [available[0], available[1]] = [available[1], available[0]];
+  }
+
+  return available;
+}
+
 function pad(value: number) {
   return String(Math.max(0, value)).padStart(2, "0");
 }
@@ -228,7 +245,7 @@ export default function Home() {
                   <blockquote>“{QUOTE_CHALLENGE[quoteIndex].quote}”</blockquote>
                 </article>
                 <div className="friend-roster" aria-label="Choose who said this">
-                  {QUOTE_CHALLENGE.filter(({ person }) => !matchedPeople.includes(person)).map(({ person }) => <button key={person} onClick={() => matchQuote(person)} disabled={quoteStatus === "correct"}>{person}</button>)}
+                  {getJumbledPeople(quoteIndex, matchedPeople).map((person) => <button key={person} onClick={() => matchQuote(person)} disabled={quoteStatus === "correct"}>{person}</button>)}
                 </div>
                 <p className={`match-feedback is-${quoteStatus}`} aria-live="polite">{quoteFeedback || "SELECT THE FRIEND WHO SENT THIS TRANSMISSION"}</p>
               </div>
@@ -290,7 +307,7 @@ export default function Home() {
                     <div className="memory-label"><small>MEMORY ARCHIVE // {String(currentSlide + 1).padStart(2, "0")}</small><strong>ANANYA</strong><span>LEVEL 20</span></div>
                     <div className="slide-controls"><button onClick={() => setCurrentSlide((slide) => (slide - 1 + MEMORIES.length) % MEMORIES.length)} aria-label="Previous memory">←</button><div>{MEMORIES.map((_, index) => <button key={index} className={index === currentSlide ? "is-active" : ""} onClick={() => setCurrentSlide(index)} aria-label={`Show memory ${index + 1}`} />)}</div><button onClick={() => setCurrentSlide((slide) => (slide + 1) % MEMORIES.length)} aria-label="Next memory">→</button></div>
                   </div>
-                  <i>AVENGERS</i>
+                  <i>Manam Manam:</i>
                 </div>
                 <div className="file-tabs"><span>AVENGERS</span><span>HISTOGRAM</span><span>POSTER</span><span>STORYTELLING</span></div>
               </div>
